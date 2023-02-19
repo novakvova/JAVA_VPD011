@@ -1,14 +1,14 @@
 package program;
 
-import models.Question;
-import models.QuestionItem;
-import models.Role;
+import models.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.engine.transaction.internal.TransactionImpl;
 import org.hibernate.query.Query;
 import utils.HibernateSessionFactoryUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,6 +18,51 @@ public class Main {
         //insertRole();
         //showRoles();
         //addQuestion();
+        //addUserRole();
+        //addProductCategory();
+        try(var context = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
+            Transaction tx = context.beginTransaction();
+            var p = new Product();
+            p.setId(1);
+            var u = new User();
+            u.setId(1);
+            var basket = new Basket();
+            basket.setUser(u);
+            basket.setProduct(p);
+            basket.setCount(2);
+            context.save(basket);
+            tx.commit();
+        }
+    }
+    private static void addProductCategory() {
+        try(var context = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
+            Transaction tx = context.beginTransaction();
+            Category cat = new Category("Ноутбуки","laptop.jpg", new Date(), false);
+            context.save(cat);
+            Product p = new Product("HP ZBook Power 15 g8", "Для козаків",
+                    new Date(),false, cat);
+            context.save(p);
+            ProductImage pi = new ProductImage("1.jpg", 1, new Date(),false, p);
+            ProductImage pi2 = new ProductImage("2.jpg", 2, new Date(),false, p);
+            context.save(pi);
+            context.save(pi2);
+            tx.commit();
+        }
+    }
+    private static void addUserRole() {
+        try(var context = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
+            Transaction tx = context.beginTransaction();
+            var role = new Role();
+            role.setId(1);
+            var user = new User("Марко","Шлунок","shlunok@gmail.com",
+                    "+38097 98 393 22","123456");
+            context.save(user);
+            UserRole ur = new UserRole();
+            ur.setUser(user);
+            ur.setRole(role);
+            context.save(ur);
+            tx.commit();
+        }
     }
     private static void insertRole() {
         Scanner in = new Scanner(System.in);
