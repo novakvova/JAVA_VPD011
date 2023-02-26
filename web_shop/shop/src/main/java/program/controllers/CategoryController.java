@@ -5,9 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import program.dto.category.CategoryCreateDTO;
+import program.dto.category.CategoryItemDTO;
 import program.dto.category.CategoryUpdateDTO;
 import program.entities.CategoryEntity;
+import program.mapper.CategoryMapper;
 import program.repositories.CategoryRepository;
+import program.storage.StorageService;
 
 import java.util.List;
 
@@ -16,16 +19,20 @@ import java.util.List;
 @RequestMapping("api/categories")
 public class CategoryController {
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
+    private final StorageService storageService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryEntity>> index() {
+    public ResponseEntity<List<CategoryItemDTO>> index() {
         var list = categoryRepository.findAll();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        var model = categoryMapper.CategoryItemsByCategories(list);
+        return new ResponseEntity<>(model, HttpStatus.OK);
     }
     @PostMapping
     public ResponseEntity<CategoryEntity> create(CategoryCreateDTO model) {
-        CategoryEntity category = new CategoryEntity();
-        category.setName(model.getName());
+        var image = storageService.save(model.getBase64());
+        CategoryEntity category = categoryMapper.CategoryByCreateCategoryDTO(model);
+        category.setImage(image);
         categoryRepository.save(category);
         return new ResponseEntity<>(category, HttpStatus.CREATED);
     }

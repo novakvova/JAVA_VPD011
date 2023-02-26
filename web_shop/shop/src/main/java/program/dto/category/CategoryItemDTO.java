@@ -1,9 +1,11 @@
 package program.dto.category;
+
 import lombok.Data;
 
 @Data
-public class CategoryCreateDTO {
+public class CategoryItemDTO {
+    private int id;
     private String name;
-    private String base64;
     private String description;
+    private String image;
 }
