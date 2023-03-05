@@ -7,10 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,11 +95,19 @@ public class FileSystemStorageService implements StorageService {
     }
     @Override
     public void removeFile(String name) {
-
+        int [] imageSize = {32,150,300,600,1200};
+        for(var size : imageSize) {
+            Path filePath = load(size+"_"+name);
+            File file = new File(filePath.toString());
+            if(file.delete())
+                System.out.println("Файл видалено "+ name);
+            else
+                System.out.println("Файл не знайдено "+ name);
+        }
     }
 
     @Override
     public Path load(String filename) {
-        return null;
+        return rootLocation.resolve(filename);
     }
 }
